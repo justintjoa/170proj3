@@ -170,7 +170,6 @@ AddrSpace::AddrSpace(const AddrSpace* other, PCB* newpcb) {
         //Also (other->pageTable)[i] gives the i-th logical page table entry of "other" process.
         //Thus you will fill code inside the loop body of  for (int i = 0; i < numPages; i++) {  }
 		
-		pageTable = new TranslationEntry[numPages];
 		for(unsigned int i = 0; i < numPages; i++) {
 			
             pageTable[i].virtualPage = (other->pageTable)[i].virtualPage;
@@ -200,7 +199,7 @@ AddrSpace::AddrSpace(const AddrSpace* other, PCB* newpcb) {
             int otherPhysAddr = (other->pageTable)[i].physicalPage * PageSize;
             bzero(&(machine->mainMemory[thisPhysAddr]), PageSize);
 			
-			bcopy(&(machine->mainMemory[thisPhysAddr]), &(machine->mainMemory[otherPhysAddr]), PageSize);
+			bcopy(&(machine->mainMemory[otherPhysAddr]), &(machine->mainMemory[thisPhysAddr]), PageSize);
         }
 
         machineLock->Release();

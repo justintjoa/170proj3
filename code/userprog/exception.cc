@@ -214,8 +214,8 @@ int forkImpl() {
     // See addrspace.cc and thread.cc on how to save the states.
     // END HINTS
 	
-	currentThread->SaveUserState();
-	currentThread->space->SaveState();
+	// currentThread->SaveUserState();
+	// currentThread->space->SaveState();
 	
 	childThread->SaveUserState();
 	childThread->space->SaveState();
