@@ -105,6 +105,10 @@ void ProcessManager::join(int pid) {
     //Decrement   processesWaitingOnPID[pid].
     //END HINTS
     
+
+    processesWaitingOnPID[pid]++;
+    // todo help please
+
    
   
 
@@ -131,8 +135,7 @@ void ProcessManager::broadcast(int pid) {
         // Wake up others
         // END HINTS
         
-       
-      
+         condition->broadcast();
     }
 }
 
