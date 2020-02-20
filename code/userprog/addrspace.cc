@@ -160,6 +160,7 @@ AddrSpace::AddrSpace(const AddrSpace* other, PCB* newpcb) {
         //BEGIN HINTS
         //Set up the page table for the new process and allocate physical pages for each page in the new process under newpcb
         //ENDO HINTS
+<<<<<<< HEAD
         //More hint: Look at sample code of AddrSpace::AddrSpace(OpenFile *executable, PCB* newpcb))
         //code  to see how it  sets up each page table entry of a new process. Need to fill every field of the page table entry.
         //See machine/translate.h for the definition of each  page table entry.
@@ -167,7 +168,34 @@ AddrSpace::AddrSpace(const AddrSpace* other, PCB* newpcb) {
         //Also (other->pageTable)[i] gives the i-th logical page table entry of "other" process.
         //Thus you will fill code inside the loop body of  for (int i = 0; i < numPages; i++) {  }
 
+        for(unsigned int i = 0; i < numPages; i++) {
+=======
+		
+        //More hint: Look at sample code of AddrSpace::AddrSpace(OpenFile *executable, PCB* newpcb))
+        //code  to see how it  sets up each page table entry of a new process. Need to fill every field of the page table entry.
+		
+        //See machine/translate.h for the definition of each  page table entry.
+        //See memoryManager.cc on how to allocate memory pages.
+		
+        //Also (other->pageTable)[i] gives the i-th logical page table entry of "other" process.
+        //Thus you will fill code inside the loop body of  for (int i = 0; i < numPages; i++) {  }
+		
+		for(unsigned int i = 0; i < numPages; i++) {
+>>>>>>> 20ff1face6885d468397e46c1afedf8be44e2d93
+			
+            pageTable[i].virtualPage = (other->pageTable)[i].virtualPage;
+            pageTable[i].physicalPage = memoryManager->getPage(); // TODO - same physical space? Or allocate new pages?
+            pageTable[i].valid = (other->pageTable)[i].valid;
+            pageTable[i].use = (other->pageTable)[i].use;
+            pageTable[i].dirty = (other->pageTable)[i].dirty;
+            pageTable[i].readOnly = (other->pageTable)[i].readOnly;
+        
+		}
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 20ff1face6885d468397e46c1afedf8be44e2d93
         memoryManager->lock->Release();
 
         machineLock->Acquire();
@@ -178,7 +206,28 @@ AddrSpace::AddrSpace(const AddrSpace* other, PCB* newpcb) {
         //To get the physical addres (by byte) of the other process,
         //you can use (other->pageTable)[i].physicalPage * PageSize.
         //Then you can use bzero() to clean up and  use , bcopy() to complete the copy.
+<<<<<<< HEAD
 
+=======
+		
+		
+		// Zero this process's physical page, then copy contents
+>>>>>>> 20ff1face6885d468397e46c1afedf8be44e2d93
+        for (unsigned int i = 0; i < numPages; i++) {
+			int thisPhysAddr = pageTable[i].physicalPage * PageSize;
+            int otherPhysAddr = (other->pageTable)[i].physicalPage * PageSize;
+            bzero(&(machine->mainMemory[thisPhysAddr]), PageSize);
+			
+<<<<<<< HEAD
+			bcopy(&(machine->mainMemory[thisPhysAddr]), &(machine->mainMemory[otherPhysAddr]), PageSize);
+        }
+
+
+=======
+			bcopy(&(machine->mainMemory[otherPhysAddr]), &(machine->mainMemory[thisPhysAddr]), PageSize);
+        }
+
+>>>>>>> 20ff1face6885d468397e46c1afedf8be44e2d93
         machineLock->Release();
     }
     else {
