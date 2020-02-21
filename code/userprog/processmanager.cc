@@ -136,8 +136,9 @@ void ProcessManager::broadcast(int pid) {
         // BEGIN HINTS
         // Wake up others
         // END HINTS
-        
+         lock->Acquire();
          condition->Broadcast(lock);
+         lock->Release();
     }
 }
 
