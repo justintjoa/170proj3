@@ -291,13 +291,16 @@ void exitImpl() {
     int currPID = currentThread->space->getPCB()->getPID();
     
     fprintf(stderr, "Process %d exits with %d\n", currPID, status);
-
+    currentThread->space->getPCB()->status = status;
+    processManager->broadcast(currPID);
 
     //BEGIN HINTS 
     //Set the exit status in the PCB of this process using  currentThread->space->getPCB() 
     //Also let other processes  know this process  exits through  processManager. 
     //See pcb.cc on how to get the exit code and see processmanager.cc on the above notification.
     //END HINTS
+
+    //currentThread->space->getPCB()
 
     
    
@@ -320,19 +323,29 @@ int joinImpl() {
     int otherPID = machine->ReadRegister(4);
     currentThread->space->getPCB()->status = P_BLOCKED;
 
-   // BEGIN HINTS 
-   // If the other process has  already exited, then just return its status
-   // Use proessManager to wait for the completion of  otherPID.
-   // Change the status of this process  in its PCB as P_RUNNING.
-   // END HINTS
-   //
-    
-   
-  
+    // BEGIN HINTS 
+    // If the other process has  already exited, then just return its status
+    // Use proessManager to wait for the completion of  otherPID.
+    // Change the status of this process  in its PCB as P_RUNNING.
+    // END HINTS
+    //
+
+    // Return status if exited
+    int otherStatus = processManager->getStatus(otherPID);
+    if(otherStatus == -1) {
+        return otherStatus;
+    }
+
+    // Join
+    processManager->join(otherPID);
+
+    // Set status back to running
+    currentThread->space->getPCB()->status = P_RUNNING;
+
+
  
-
-
-    return processManager->getStatus(otherPID);
+    return otherStatus;
+    // return processManager->getStatus(otherPID);
 }
 
 //----------------------------------------------------------------------

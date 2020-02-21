@@ -106,8 +106,10 @@ void ProcessManager::join(int pid) {
     //END HINTS
     
 
+    // maybe should be while loop?
     processesWaitingOnPID[pid]++;
-    // todo help please
+    conditionForOtherProcess->Wait(lockForOtherProcess);
+    processesWaitingOnPID[pid]--;
 
    
   
@@ -126,7 +128,7 @@ void ProcessManager::join(int pid) {
 
 void ProcessManager::broadcast(int pid) {
 
-    //Lock* lock = lockList[pid];
+    Lock* lock = lockList[pid];
     Condition* condition = conditionList[pid];
     pcbStatuses[pid] = pcbList[pid]->status;
 
@@ -135,7 +137,7 @@ void ProcessManager::broadcast(int pid) {
         // Wake up others
         // END HINTS
         
-         condition->broadcast();
+         condition->Broadcast(lock);
     }
 }
 
