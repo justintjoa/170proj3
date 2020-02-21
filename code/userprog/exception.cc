@@ -474,7 +474,7 @@ char* copyString(char* oldStr) {
 //----------------------------------------------------------------------
 
 int openImpl(char* filename) {
-    
+
     int index = 0;
     SysOpenFile* currSysFile = openFileManager->getFile(filename, index);
 
@@ -504,6 +504,11 @@ int openImpl(char* filename) {
    // See useropenfile.h and pcb.cc on UserOpenFile class and its methods.
    // See sysopenfile.h and openfilemanager.cc for SysOpenFile class and its methods.
     
+    currUserFile.fileName = filename;
+    currUserFile.indexInSysOpenFileList = index;
+    currUserFile.currOffsetInFile = 0;
+
+
   
  
     int currFileID = currentThread->space->getPCB()->addFile(currUserFile);

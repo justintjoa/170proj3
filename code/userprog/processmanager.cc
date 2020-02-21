@@ -106,7 +106,7 @@ void ProcessManager::join(int pid) {
     //END HINTS
     
 
-    // maybe should be while loop?
+    
     processesWaitingOnPID[pid]++;
     conditionForOtherProcess->Wait(lockForOtherProcess);
     processesWaitingOnPID[pid]--;
@@ -136,8 +136,9 @@ void ProcessManager::broadcast(int pid) {
         // BEGIN HINTS
         // Wake up others
         // END HINTS
-        
+         lock->Acquire();
          condition->Broadcast(lock);
+         lock->Release();
     }
 }
 
