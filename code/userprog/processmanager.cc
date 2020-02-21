@@ -105,6 +105,12 @@ void ProcessManager::join(int pid) {
     //Decrement   processesWaitingOnPID[pid].
     //END HINTS
     
+
+    
+    processesWaitingOnPID[pid]++;
+    conditionForOtherProcess->Wait(lockForOtherProcess);
+    processesWaitingOnPID[pid]--;
+
    
   
 
@@ -122,7 +128,7 @@ void ProcessManager::join(int pid) {
 
 void ProcessManager::broadcast(int pid) {
 
-    //Lock* lock = lockList[pid];
+    Lock* lock = lockList[pid];
     Condition* condition = conditionList[pid];
     pcbStatuses[pid] = pcbList[pid]->status;
 
@@ -130,9 +136,9 @@ void ProcessManager::broadcast(int pid) {
         // BEGIN HINTS
         // Wake up others
         // END HINTS
-        
-       
-      
+         lock->Acquire();
+         condition->Broadcast(lock);
+         lock->Release();
     }
 }
 
