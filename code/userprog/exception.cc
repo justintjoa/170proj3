@@ -323,22 +323,32 @@ void exitImpl() {
 
 int joinImpl() {
 
-    int otherPID = machine->ReadRegister(4);
+     int otherPID = machine->ReadRegister(4);
     currentThread->space->getPCB()->status = P_BLOCKED;
 
-   // BEGIN HINTS 
-   // If the other process has  already exited, then just return its status
-   // Use proessManager to wait for the completion of  otherPID.
-   // Change the status of this process  in its PCB as P_RUNNING.
-   // END HINTS
-   //
-    
-   
-  
+    // BEGIN HINTS 
+    // If the other process has  already exited, then just return its status
+    // Use proessManager to wait for the completion of  otherPID.
+    // Change the status of this process  in its PCB as P_RUNNING.
+    // END HINTS
+    //
+
+    // Return status if exited
+    int otherStatus = processManager->getStatus(otherPID);
+    if(otherStatus == -1) {
+        return otherStatus;
+    }
+
+    // Join
+    processManager->join(otherPID);
+
+    // Set status back to running
+    currentThread->space->getPCB()->status = P_RUNNING;
+
+
  
-
-
-    return processManager->getStatus(otherPID);
+    return otherStatus;
+    // return processManager->getStatus(otherPID);
 }
 
 //----------------------------------------------------------------------
