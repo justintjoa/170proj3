@@ -20,7 +20,11 @@ void proc3()
 	Yield();
 	print("proc2 resuming...\n");
 	print("Preparing to Halt...\n");
+<<<<<<< HEAD
+	Halt();
+=======
 	//Halt();
+>>>>>>> 20ff1face6885d468397e46c1afedf8be44e2d93
 }
 
 void proc2()

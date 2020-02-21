@@ -264,6 +264,11 @@ void copyStateBack(int forkPC) {
 
 void yieldImpl() {
 
+    currentThread->SaveUserState();
+    currentThread->Yield();
+    currentThread->RestoreUserState();
+    currentThread->space->RestoreState();
+
     //BEGIN HINTS
     //Save the corresponding user process's register states.
     //This kernel thread yields using currentThread->Yield() to accomplish the context switch
