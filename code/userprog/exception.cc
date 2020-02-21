@@ -334,7 +334,6 @@ int joinImpl() {
     // Change the status of this process  in its PCB as P_RUNNING.
     // END HINTS
     //
-<<<<<<< HEAD
 
     // Return status if exited
     int otherStatus = processManager->getStatus(otherPID);
@@ -345,18 +344,6 @@ int joinImpl() {
     // Join
     processManager->join(otherPID);
 
-=======
-
-    // Return status if exited
-    int otherStatus = processManager->getStatus(otherPID);
-    if(otherStatus == -1) {
-        return otherStatus;
-    }
-
-    // Join
-    processManager->join(otherPID);
-
->>>>>>> e360fec26ebfeffc197460d2ebff39a2b72346f0
     // Set status back to running
     currentThread->space->getPCB()->status = P_RUNNING;
 
@@ -599,7 +586,7 @@ void writeImpl() {
        //BEGIN HINTS
        //Fetch data from the user space to this system buffer using  userReadWrite().
        //END HINTS
-       int data = userReadWrite(writeAddr, buffer, size, USER_WRITE);
+       userReadWrite(writeAddr, buffer, size, USER_WRITE);
         
         
         UserOpenFile* userFile = currentThread->space->getPCB()->getFile(fileID);
@@ -607,9 +594,9 @@ void writeImpl() {
          return;
         }
         //BEGIN HINTS 
-        SysOpenFile* opened = openFileManager->getFile(fileID);
-        opened->file->WriteAt(buffer, size, userFile->currOffsetInFile);
-        userFile->currOffsetInFile += size;
+        SysOpenFile* opened = openFileManager->getFile(userFile->indexInSysOpenFileList);
+        int bytesWritten = opened->file->WriteAt(buffer, size, userFile->currOffsetInFile);
+        userFile->currOffsetInFile += bytesWritten;
 
         //Use openFileManager->getFile method  to find the openned file structure (SysOpenFile)
         //Use SysOpenFile->file's writeAt() to write out the above buffer with size listed.
@@ -654,9 +641,9 @@ int readImpl() {
 
         //BEGIN HINTS
         //Now from openFileManger, find the SystemOpenFile data structure for this userFile.
-        SysOpenFile* opened = openFileManager->getFile(fileID);
-        opened->file->ReadAt(buffer, size, userFile->currOffsetInFile);
-        userFile->currOffsetInFile += size;
+        SysOpenFile* opened = openFileManager->getFile(userFile->indexInSysOpenFileList);
+        int bytesRead = opened->file->ReadAt(buffer, size, userFile->currOffsetInFile);
+        userFile->currOffsetInFile += bytesRead;
         //Use ReadAt() to read the file at selected offset to this system buffer buffer[]
         // Adust the offset in userFile to reflect my current position.
         // The above few lines of code are very similar to ones in writeImpl()
@@ -664,15 +651,13 @@ int readImpl() {
         // See useropenfile.h and pcb.cc on UserOpenFile class and its methods.
         // See sysopenfile.h and openfilemanager.cc for SysOpenFile class and its methods.
  
-        
-       
-      
      
     
     }
     //BEGIN HINTS
     //Now copy data from the system buffer to the targted main memory space using userReadWrite()
     //END HINTS
+    userReadWrite(readAddr, buffer, size, USER_READ);
     
     delete [] buffer;
     return numActualBytesRead;
@@ -690,9 +675,12 @@ void closeImpl() {
         return;
     } else {
        // BEGIN HINTS
+       SysOpenFile* close = openFileManager->getFile(userFile->indexInSysOpenFileList);
+       close->closedBySingleProcess();
        // Use openFileManager's getFile method to get a pointer to the system-wide SysOpenFile  data structure
        // Call the close method in SysOpenFile
        // Remove the file  in the open file list of this process PCB using PCB::removeFILE().
+       currentThread->space->getPCB()->removeFile(fileID);
        // END HINTS
        // See useropenfile.h and pcb.cc on UserOpenFile class and its methods.
        // See sysopenfile.h and openfilemanager.cc for SysOpenFile class and its methods.
